@@ -239,3 +239,31 @@ count = iris.flatMap(lambda x:x.split(",")) \
 print(count.collect())
 
 sc.stop()
+
+Practical No. 3: Working with NoSQL database – hbase.
+$ hbase shell
+>create ‘studentrj’,’studid’,’studname’,’studaddr’
+>list
+>describe ’studentrj’
+>put ‘studentrj’,’1’,’studid:id’,101
+>put ‘studentrj’,1’,’studname:name’,’Kartik’
+>put ‘studentrj’,’1’’studaddr:addr’,’Mumbai’
+>scan ‘studentrj
+Practical No. 4: Simulating Datawarehouse environment.
+$hive
+>create database college;
+>use college;
+>create table student(rollno int,name string,course string,marks float) row format delimited fields terminated by ’,’ stored as textfile;
+>exit
+  >;
+>gedit studdata.txt
+Inside enter:
+101,Kartik,DS,35
+102,Shruti,CS,45
+103,Samruddhi,IT,35
+Contorl+S and close it
+$hive
+>use college;
+>describe formatted student;
+>load data local inpath ‘/home/cloudera/studdata.txt’ into table student;
+>select*from student;
