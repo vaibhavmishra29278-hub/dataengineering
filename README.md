@@ -267,3 +267,195 @@ $hive
 >describe formatted student;
 >load data local inpath ‘/home/cloudera/studdata.txt’ into table student;
 >select*from student;
+
+Practical No 5 Working with different types of tables in hive
+Internal Table : 
+$hive 
+> create database collage1; 
+> show databases; 
+> use collage1;
+> exit;
+$gedit studdata.txt
+---TXT.FILE DATA---
+ 101,AAA,CS,75
+ 102,BBB,DS,67
+ 103,CCC,UT,87
+$hive
+> use college1;
+> describe formatted student;
+> load data local inpath '/home/coludera/studdata.csv' into table student;
+>select * form student;
+> create table customer (id int , 
+name string, 
+dob string,
+email string,
+contact string,
+add string,
+gender string)
+row format delimited fields terminated by ‘,’ ;
+> exit;
+$ gedit cusdata.csv;
+$ hive;
+$ hdfs dfs -mkdir /hadoop
+$ hdfs dfs -mkdir /hadoop/data
+$ hdfs dfs -put custdata.csv /hadoop/data
+$ hive
+> use licdw;
+> load data inpath '/hadoop/data/custdata.csv'into table customer;
+> select* from customer;
+
+External
+>use licdw;
+>create external table policy_details (id int , 
+name string, 
+type string, 
+age_criteria int, 
+tenure int , 
+maturity string) row format delimited fields terminated by ‘,’ 
+stored as textfile location ‘/home/cloudera/policydetail_data’ ; 
+>load data local inpath ‘/home/cloudera/Desktop/policydetails.csv’ into table policy_details; 
+> select * from policy_details ;
+
+Temporary Table
+>create temporary table policy_details_temp ( id int,
+name string,
+type string,
+age_criteria int ,
+tenure int,
+maturity string);
+> describe policy_details_temp ;
+> insert into policy_details_temp values (32, ‘abc’ , ‘h’ , 32 , 3 , ‘40%’);
+>insert into policy_details_temp values (33, ‘afc’ , ‘r’ , 32 , 3 , ‘44%’);
+>show tables 
+>select * from policy_det_temp;
+>create table policy_det_dup as select * from policy_deatils;
+>select * from plicy_det_dup;
+>create table policy_det_like like policy_details;
+>select * from policy_det_like;
+
+Practical 5 : B. Demonstrating table partitioning , clustering (Bucketing in hive)
+1. Create and partition a table named emppartition on the mobile no column and load data into it
+$hive
+>create database licdw;
+>use licdw;
+>create table emppartition(
+empid int,
+name string
+)
+partitioned by (mno string)
+row format delimited
+fields terminated by ",";
+
+>set hive.exec.dynamic.partition.mode=nonstrict;
+>insert into emppartition partition(mno) values(1,'uday','89272861');
+>insert into emppartition partition(mno) values(2,'jay','89272861');
+>insert into emppartition partition(mno) values(3,'nikhil','47252258');
+
+select * from emppartition;
+
+2. Create a table emp_buck_no_partition with only bucketing on the m_no column and
+load data into table.
+$hive;
+>Create bucketed table
+create table emp_buck_no_part(
+empid int,
+name string,
+mno string
+) clustered by (mno) into 5 buckets;
+
+>insert into emp_buck_no_part values(1,'abc','9654532165');
+>insert into emp_buck_no_part values(2,'def','9589548213');
+>insert into emp_buck_no_part values(3,'hgj','9589548213');
+>insert into emp_buck_no_part values(4,'gog','9654532165');
+>describe formatted emp_buck_no_part;
+>select * from emp_buck_no_part;
+
+3. Create emp_buck_with_part on mno column and load data into it.
+$hive;
+>create table emp_buck_part(
+empid int,
+name string,
+mno string
+) partitioned by (dept string) clustered by (mno) into 5 buckets row format delimited
+fields terminated by ',';
+
+>insert into emp_buck_part partition(dept='HR')values(1,'Alice','50000');
+
+>insert into emp_buck_part partition(dept='IT') values(2,'Bob','60000');
+>select * from emp_buck_part;
+
+4.Create table empdata with partition(dept) and clustered by empid and load data into it.
+>create table empdata(
+empid int,
+name string,
+salary int
+)
+partitioned by (dept string)
+clustered by (salary) into 4 buckets;
+
+>insert into empdata partition(dept='HR') values(1,'Alice',50000);
+>insert into empdata partition(dept='IT')values(2,'Bob',60000);
+>select * from empdata;
+
+5.Create table sales_data partitioned by year and month and load data into it.
+
+>Create table
+CREATE TABLE sales_data(
+orderid INT,
+product STRING,
+amount DOUBLE
+)
+PARTITIONED BY (year INT, month INT);
+
+>CREATE TABLE temp_sales(
+orderid STRING,
+product STRING,
+amount DOUBLE,
+month INT
+);
+
+>INSERT INTO temp_sales VALUES (1,'Laptop',1200,1);
+>INSERT INTO temp_sales VALUES (2,'Keyboard',75,2);
+>INSERT INTO temp_sales VALUES (3,'Monitor',300,2);
+>INSERT INTO temp_sales VALUES (4,'Mouse',40,3);
+
+>SET hive.exec.dynamic.partition.mode=nonstrict;
+>Insert data into partition table
+>INSERT INTO sales_data PARTITION(year=2023, month)
+>SELECT orderid, product, amount, month
+>FROM temp_sales;
+
+>SELECT * FROM sales_data;
+>SHOW PARTITIONS sales_data;
+
+Practical No. 6: Demonstrating Publisher/Subscriber messaging system using 
+Kafka. 
+Step 1: Install Java jdk and make environment variable named JAVA_HOME with 
+jdk path. 
+Step 2: Paste “%JAVA_HOME\bin” in the system variables PATH.
+Step 4: Open zookeeper.properties and changes its dataDir to 
+“C:\kafka\zookeeper-data”. 
+Step 5: Open server.properties and change its log.dirs to C:\kafka\kafka-logs. 
+Step 3: Install “kafka_2.12-3.7.0” and extract its files in C:\kafka.
+Step 6: Open Windows Powershell as administrator and run this command to start 
+zookeeper server. 
+cd C:\kafka 
+.\bin\windows\zookeeper-server-start.bat .\config\zookeeper.properties
+ 
+Step 7: Open another Windows Powershell as administrator and run this command 
+to start kafka server. 
+cd C:\kafka 
+.\bin\windows\kafka-server-start.bat .\config\server.properties
+ 
+  
+Step 8: Open Command Prompt with “C:\kafka\kafka_2.12-3.7.0\bin\windows” 
+and run this command to create topic ‘test’. 
+kafka-topics.bat --create --bootstrap-server localhost:9092 -
+replication-factor 1 --partitions 1 --topic test
+ 
+Step 9: Open another Command Prompt with “C:\kafka\kafka_2.12
+3.7.0\bin\windows” and run this command to create producer. 
+kafka-console-producer.bat --broker-list localhost:9092 --topic test
+ Step 10: Open another Command Prompt with “C:\kafka\kafka_2.12
+3.7.0\bin\windows” and run this command to create consumer. 
+kafka-console-consumer.bat --bootstrap-server localhost:9092 --t
